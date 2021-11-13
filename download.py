@@ -6,10 +6,12 @@ import requests
 
 session = None
 
+
 def set_global_session():
     global session
     if not session:
         session = requests.Session()
+
 
 def logs(txt):
     dt = datetime.datetime.now()
@@ -18,30 +20,35 @@ def logs(txt):
         print(f'{dt}-{txt}\n')
         logs.write(f'{dt}-{txt}\n')
 
+
 def get_website(url):
     logs(f'currently loading {url}')
     # reads the website
     with session.get(url) as response:
         return response.content
 
+
 def string_mutate(txt, after, before):
     return txt.translate({ord(c): after for c in before})
 
+
 def save_website(title, data, metadata):
-    #parses the title
+    # parses the title
     title = title[15:]
     title = string_mutate(title, '_', ' ')
     logs(f'saving: {title}')
-    #creates the directory
-    Path(f'stories/{title}').mkdir(parents=True, exist_ok=True)
-    with open(f'stories/{title}/{title}.html', 'wb') as story:
+    # creates the directory
+    directory = f'' # directory here
+    Path(directory).mkdir(parents=True, exist_ok=True)
+    with open(f'{directory}/{title}.html', 'wb') as story:
         story.write(data)
-    with open(f'stories/{title}/{title}-metadata.html', 'wb') as f:
+    with open(f'{directory}/{title}-metadata.html', 'wb') as f:
         f.write(metadata)
 
+
 def single_request(number):
-    base_url = ''#get request here
-    metadata_base_url = '' #get request here
+    base_url = f''  # get request here
+    metadata_base_url = f''  # get request here
     webContent = get_website(base_url)
 
     soup = BeautifulSoup(webContent, 'html.parser')
@@ -68,6 +75,7 @@ def create_array(start, end):
         array.append(x)
     return array
 
+
 def run_parser():
     array = create_array(0, 11000)
 
@@ -81,5 +89,3 @@ if __name__ == '__main__':
     # creates the array
     run_parser()
     logs('done')
-
-
